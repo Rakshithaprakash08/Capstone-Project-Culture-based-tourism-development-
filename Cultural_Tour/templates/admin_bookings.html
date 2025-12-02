@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Manage Bookings{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h3 class="mb-3">Bookings</h3>
+
+  {% if bookings %}
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Tour</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Travel Date</th>
+            <th>People</th>
+            <th>Status</th>
+            <th>Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bookings %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ b.place.name }}</td>
+              <td>{{ b.name }}</td>
+              <td>
+                {{ b.email }}<br>
+                <span class="text-muted small">{{ b.phone }}</span>
+              </td>
+              <td>{{ b.travel_date }}</td>
+              <td>{{ b.num_people }}</td>
+              <td>
+                <span class="badge 
+                  {% if b.status == 'Pending' %}bg-warning text-dark
+                  {% elif b.status == 'Confirmed' %}bg-success
+                  {% else %}bg-danger{% endif %}">
+                  {{ b.status }}
+                </span>
+              </td>
+              <td>
+                <form method="post" action="{{ url_for('admin_update_booking_status', booking_id=b.id) }}" class="d-flex gap-1">
+                  <select name="status" class="form-select form-select-sm">
+                    <option value="Pending" {% if b.status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Confirmed" {% if b.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="Rejected" {% if b.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                  </select>
+                  <button class="btn btn-sm btn-primary" type="submit">Save</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info">No bookings yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

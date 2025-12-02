@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Edit Hotel{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>Edit Hotel</h3>
+    <a href="{{ url_for('admin_hotels') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Back to Hotels
+    </a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="card">
+    <div class="card-body">
+      <form method="POST">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="place_id" class="form-label">Place *</label>
+              <select class="form-select" id="place_id" name="place_id" required>
+                <option value="">Select a place</option>
+                {% for place in places %}
+                  <option value="{{ place.id }}" {% if hotel.place_id == place.id %}selected{% endif %}>
+                    {{ place.name }}, {{ place.state }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="name" class="form-label">Hotel Name *</label>
+              <input type="text" class="form-control" id="name" name="name" 
+                     value="{{ hotel.name }}" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="price_per_night" class="form-label">Price per Night (₹) *</label>
+              <input type="number" class="form-control" id="price_per_night" name="price_per_night" 
+                     value="{{ '%.0f'|format(hotel.price_per_night) }}" min="0" step="0.01" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="rating" class="form-label">Rating (1-5)</label>
+              <input type="number" class="form-control" id="rating" name="rating" 
+                     value="{{ hotel.rating if hotel.rating }}" min="1" max="5" step="0.1" 
+                     placeholder="e.g., 4.5">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="amenities" class="form-label">Amenities</label>
+              <textarea class="form-control" id="amenities" name="amenities" rows="3" 
+                        placeholder="WiFi, Pool, AC, Restaurant...">{{ hotel.amenities or '' }}</textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="image_url" class="form-label">Image URL</label>
+              <input type="url" class="form-control" id="image_url" name="image_url" 
+                     value="{{ hotel.image_url or '' }}" placeholder="https://example.com/image.jpg">
+            </div>
+
+            <div class="mb-3">
+              <label for="contact_info" class="form-label">Contact Information</label>
+              <input type="text" class="form-control" id="contact_info" name="contact_info" 
+                     value="{{ hotel.contact_info or '' }}" placeholder="Phone, email, etc.">
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea class="form-control" id="description" name="description" rows="4" 
+                    placeholder="Hotel description...">{{ hotel.description or '' }}</textarea>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle"></i> Update Hotel
+          </button>
+          <a href="{{ url_for('admin_hotels') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

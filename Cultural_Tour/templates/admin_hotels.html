@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Manage Hotels{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>Manage Hotels</h3>
+    <a href="{{ url_for('admin_add_hotel') }}" class="btn btn-primary">
+      <i class="bi bi-plus-circle"></i> Add New Hotel
+    </a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="card">
+    <div class="card-body">
+      {% if hotels %}
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Place</th>
+                <th>Price/Night</th>
+                <th>Rating</th>
+                <th>Amenities</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for hotel in hotels %}
+              <tr>
+                <td>
+                  <strong>{{ hotel.name }}</strong>
+                  {% if hotel.image_url %}
+                    <br><small class="text-muted">Has image</small>
+                  {% endif %}
+                </td>
+                <td>{{ hotel.place.name }}, {{ hotel.place.state }}</td>
+                <td>₹{{ '%.0f'|format(hotel.price_per_night) }}</td>
+                <td>
+                  {% if hotel.rating %}
+                    <span class="badge bg-warning text-dark">{{ hotel.rating }} ★</span>
+                  {% else %}
+                    <span class="text-muted">-</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if hotel.amenities %}
+                    <small>{{ hotel.amenities|truncate(30) }}</small>
+                  {% else %}
+                    <span class="text-muted">-</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <a href="{{ url_for('admin_edit_hotel', hotel_id=hotel.id) }}" class="btn btn-outline-primary">Edit</a>
+                    <form method="POST" action="{{ url_for('admin_delete_hotel', hotel_id=hotel.id) }}" style="display: inline;">
+                      <button type="submit" class="btn btn-outline-danger" 
+                              onclick="return confirm('Delete this hotel?')">Delete</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-4">
+          <i class="bi bi-building display-1 text-muted"></i>
+          <h5 class="text-muted mt-3">No hotels added yet</h5>
+          <p class="text-muted">Get started by adding your first hotel.</p>
+          <a href="{{ url_for('admin_add_hotel') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add First Hotel
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

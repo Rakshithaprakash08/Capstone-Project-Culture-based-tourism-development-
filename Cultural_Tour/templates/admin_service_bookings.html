@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}Manage Service Bookings{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>Manage Service Bookings</h3>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="card">
+    <div class="card-body">
+      {% if service_bookings %}
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Customer</th>
+                <th>Place</th>
+                <th>Services</th>
+                <th>Amount</th>
+                <th>Dates</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for booking in service_bookings %}
+              <tr>
+                <td>#{{ booking.id }}</td>
+                <td>
+                  <strong>{{ booking.customer_name }}</strong><br>
+                  <small class="text-muted">{{ booking.customer_email }}</small><br>
+                  <small class="text-muted">{{ booking.customer_phone }}</small>
+                </td>
+                <td>{{ booking.place.name }}</td>
+                <td>
+                  {% if booking.hotel %}
+                    <span class="badge bg-success">Hotel</span><br>
+                    <small>{{ booking.hotel.name }}</small>
+                  {% endif %}
+                  {% if booking.transport %}
+                    <span class="badge bg-info">Transport</span><br>
+                    <small>{{ booking.transport.name }}</small>
+                  {% endif %}
+                </td>
+                <td>₹{{ '%.0f'|format(booking.total_amount) }}</td>
+                <td>
+                  {% if booking.check_in_date %}
+                    {{ booking.check_in_date.strftime('%d/%m/%Y') }}<br>
+                    to {{ booking.check_out_date.strftime('%d/%m/%Y') }}
+                  {% else %}
+                    <span class="text-muted">-</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <form method="POST" action="{{ url_for('admin_update_service_booking_status', booking_id=booking.id) }}" class="d-inline">
+                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                      <option value="Pending" {% if booking.status == 'Pending' %}selected{% endif %}>Pending</option>
+                      <option value="Confirmed" {% if booking.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                      <option value="Cancelled" {% if booking.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                  </form>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#bookingModal{{ booking.id }}">
+                    View
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Modal for booking details -->
+              <div class="modal fade" id="bookingModal{{ booking.id }}" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Booking #{{ booking.id }} Details</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <h6>Customer Information</h6>
+                          <p><strong>Name:</strong> {{ booking.customer_name }}</p>
+                          <p><strong>Email:</strong> {{ booking.customer_email }}</p>
+                          <p><strong>Phone:</strong> {{ booking.customer_phone }}</p>
+                          <p><strong>People:</strong> {{ booking.num_people }}</p>
+                        </div>
+                        <div class="col-md-6">
+                          <h6>Booking Information</h6>
+                          <p><strong>Place:</strong> {{ booking.place.name }}</p>
+                          <p><strong>Booking Date:</strong> {{ booking.created_at.strftime('%d %b %Y %H:%M') }}</p>
+                          <p><strong>Status:</strong> {{ booking.status }}</p>
+                        </div>
+                      </div>
+                      
+                      {% if booking.hotel %}
+                      <hr>
+                      <h6>Hotel Details</h6>
+                      <p><strong>Hotel:</strong> {{ booking.hotel.name }}</p>
+                      {% if booking.check_in_date %}
+                      <p><strong>Check-in:</strong> {{ booking.check_in_date.strftime('%d %b %Y') }}</p>
+                      <p><strong>Check-out:</strong> {{ booking.check_out_date.strftime('%d %b %Y') }}</p>
+                      <p><strong>Nights:</strong> {{ booking.num_days }}</p>
+                      <p><strong>Rooms:</strong> {{ booking.num_rooms }}</p>
+                      {% endif %}
+                      <p><strong>Hotel Total:</strong> ₹{{ '%.0f'|format(booking.hotel_total) }}</p>
+                      {% endif %}
+
+                      {% if booking.transport %}
+                      <hr>
+                      <h6>Transport Details</h6>
+                      <p><strong>Service:</strong> {{ booking.transport.name }}</p>
+                      <p><strong>Type:</strong> {{ booking.transport.transport_type|upper }}</p>
+                      <p><strong>Transport Total:</strong> ₹{{ '%.0f'|format(booking.transport_total) }}</p>
+                      {% endif %}
+
+                      <hr>
+                      <h6>Pricing Summary</h6>
+                      <p><strong>Total Amount:</strong> ₹{{ '%.0f'|format(booking.total_amount) }}</p>
+
+                      {% if booking.special_requests %}
+                      <hr>
+                      <h6>Special Requests</h6>
+                      <p>{{ booking.special_requests }}</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-4">
+          <i class="bi bi-cart display-1 text-muted"></i>
+          <h5 class="text-muted mt-3">No service bookings yet</h5>
+          <p class="text-muted">Service bookings will appear here when customers make bookings.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

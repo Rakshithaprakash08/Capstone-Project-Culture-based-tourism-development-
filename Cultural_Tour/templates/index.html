@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Cultural Tours - Bharat Culture Trails{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center gy-4">
+      <div class="col-lg-7">
+        <h1 class="display-5 fw-bold mb-3 text-gradient">
+          Curated Cultural Tours of South & West India
+        </h1>
+        <p class="lead text-light">
+          Explore temples, forts, folk arts, coastal heritage, and royal legacies across
+          Karnataka, Tamil Nadu, Andhra Pradesh, and Maharashtra.
+        </p>
+        <div class="d-flex flex-wrap gap-2 mt-3">
+          <a href="#places" class="btn btn-primary btn-lg">
+            <i class="bi bi-compass"></i> Browse Tours
+          </a>
+          <a href="#transport" class="btn btn-outline-light btn-lg">
+            <i class="bi bi-geo-alt"></i> Transport & Hotels
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-5 text-center">
+        <div class="hero-card shadow-lg">
+          <h5 class="mb-3 text-uppercase small text-muted">Filter by State</h5>
+          <form method="get" action="{{ url_for('index') }}">
+            <select name="state" class="form-select mb-3">
+              <option value="">All States</option>
+              {% for st in states %}
+                <option value="{{ st }}" {% if selected_state == st %}selected{% endif %}>
+                  {{ st }}
+                </option>
+              {% endfor %}
+            </select>
+            <button class="btn btn-accent w-100" type="submit">
+              <i class="bi bi-funnel"></i> Apply Filter
+            </button>
+          </form>
+          <p class="mt-3 small text-muted">
+            Discover handpicked cultural experiences crafted for heritage lovers.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="places" class="py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="section-title mb-0 text-white">
+        Available Cultural Experiences
+      </h2>
+      <span class="badge bg-primary-subtle text-primary">
+        {{ places|length }} tours found
+      </span>
+    </div>
+
+    {% if places %}
+      <div class="row g-4">
+        {% for place in places %}
+          <div class="col-md-6 col-lg-4">
+            <div class="card tour-card h-100 shadow-sm">
+              {% if place.image_url %}
+                <div class="ratio ratio-16x9">
+                  <img src="{{ place.image_url }}" class="card-img-top" alt="{{ place.name }}">
+                </div>
+              {% endif %}
+              <div class="card-body d-flex flex-column text-white">
+                <h5 class="card-title">{{ place.name }}</h5>
+                <p class="card-subtitle mb-2 text-white">
+                  {{ place.city if place.city }}{% if place.city %}, {% endif %}{{ place.state }}
+                </p>
+                <p class="card-text flex-grow-1 text-white">
+                  {{ place.short_intro }}
+                </p>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                  <span class="text-primary fw-semibold">
+                    ₹{{ '%.0f'|format(place.price_per_person) }} / person
+                  </span>
+                  <span class="badge bg-light text-dark">
+                    {{ place.duration_days }} days
+                  </span>
+                </div>
+                <div class="mt-2">
+                  <a href="{{ url_for('place_detail', place_id=place.id) }}" class="btn btn-outline-primary w-100">
+                    View Details &amp; Book
+                  </a>
+                </div>
+                <div class="mt-2">
+                  <a href="{{ url_for('book_services', place_id=place.id) }}" class="btn btn-success w-100">
+                    <i class="bi bi-building"></i> Book Hotels & Transport
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-info">
+        No tours added yet. Please check back soon.
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<section id="transport" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="section-title mb-4">Transportation & Hotel Services</h2>
+    <div class="row g-4">
+      {% for place in places %}
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">{{ place.name }}, {{ place.state }}</h5>
+            </div>
+            <div class="card-body">
+              <!-- Hotels -->
+              <h6 class="text-muted mb-3">
+                <i class="bi bi-building"></i> Available Hotels
+                <span class="badge bg-secondary ms-2">{{ place.hotels|length }}</span>
+              </h6>
+              <div class="row g-3 mb-4">
+                {% for hotel in place.hotels %}
+                <div class="col-md-6 col-lg-3">
+                  <div class="card h-100">
+                    {% if hotel.image_url %}
+                    <img src="{{ hotel.image_url }}" class="card-img-top" alt="{{ hotel.name }}" style="height: 120px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                      <h6 class="card-title">{{ hotel.name }}</h6>
+                      <p class="card-text small text-muted">{{ hotel.description|truncate(60) }}</p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-success fw-bold">₹{{ '%.0f'|format(hotel.price_per_night) }}/night</span>
+                        {% if hotel.rating %}
+                        <span class="badge bg-warning text-dark">{{ hotel.rating }} ★</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% else %}
+                <div class="col-12">
+                  <p class="text-muted">No hotels available for this location.</p>
+                </div>
+                {% endfor %}
+              </div>
+
+              <!-- Transport -->
+              <h6 class="text-muted mb-3">
+                <i class="bi bi-geo-alt"></i> Available Transport
+                <span class="badge bg-secondary ms-2">{{ place.transports|length }}</span>
+              </h6>
+              <div class="row g-3">
+                {% for transport in place.transports %}
+                <div class="col-md-6 col-lg-4">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="card-title">{{ transport.name }}</h6>
+                        <span class="badge {% if transport.transport_type == 'bus' %}bg-info
+                                         {% elif transport.transport_type == 'cab' %}bg-warning
+                                         {% elif transport.transport_type == 'train' %}bg-success
+                                         {% else %}bg-secondary{% endif %}">
+                          {{ transport.transport_type|upper }}
+                        </span>
+                      </div>
+                      <p class="card-text small text-muted">{{ transport.description|truncate(80) }}</p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-success fw-bold">₹{{ '%.0f'|format(transport.price) }}</span>
+                        {% if transport.duration_hours %}
+                        <span class="text-muted small">{{ transport.duration_hours }} hrs</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% else %}
+                <div class="col-12">
+                  <p class="text-muted">No transport services available for this location.</p>
+                </div>
+                {% endfor %}
+              </div>
+              
+              <div class="mt-4 text-center">
+                <a href="{{ url_for('book_services', place_id=place.id) }}" class="btn btn-primary">
+                  <i class="bi bi-cart-plus"></i> Book Services for {{ place.name }}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

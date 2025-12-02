@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Add Transport{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="mb-0">Add Transport Service</h4>
+        </div>
+        <div class="card-body">
+          <form method="POST" action="{{ url_for('admin_add_transport') }}">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="place_id" class="form-label">Select Place *</label>
+                <select class="form-select" id="place_id" name="place_id" required>
+                  <option value="">Choose a place...</option>
+                  {% for place in places %}
+                    <option value="{{ place.id }}">{{ place.name }}, {{ place.state }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="transport_type" class="form-label">Transport Type *</label>
+                <select class="form-select" id="transport_type" name="transport_type" required>
+                  <option value="">Choose type...</option>
+                  <option value="bus">Bus</option>
+                  <option value="cab">Cab</option>
+                  <option value="train">Train</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label for="name" class="form-label">Service Name *</label>
+                <input type="text" class="form-control" id="name" name="name" 
+                       placeholder="e.g., AC Volvo Bus, Local Taxi Service, Express Train..." required>
+              </div>
+
+              <div class="col-12">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" 
+                         placeholder="Service details, routes, features..."></textarea>
+              </div>
+
+              <div class="col-md-4">
+                <label for="price" class="form-label">Price (₹) *</label>
+                <input type="number" class="form-control" id="price" name="price" 
+                       min="0" step="0.01" value="0" required>
+              </div>
+
+              <div class="col-md-4">
+                <label for="capacity" class="form-label">Capacity (People)</label>
+                <input type="number" class="form-control" id="capacity" name="capacity" 
+                       min="1" placeholder="e.g., 4 for cab, 40 for bus">
+              </div>
+
+              <div class="col-md-4">
+                <label for="duration_hours" class="form-label">Duration (Hours)</label>
+                <input type="number" class="form-control" id="duration_hours" name="duration_hours" 
+                       min="0" step="0.1" placeholder="e.g., 2.5">
+              </div>
+
+              <div class="col-md-6">
+                <label for="operating_hours" class="form-label">Operating Hours</label>
+                <input type="text" class="form-control" id="operating_hours" name="operating_hours" 
+                       placeholder="e.g., 6:00 AM - 10:00 PM">
+              </div>
+
+              <div class="col-md-6">
+                <label for="contact_info" class="form-label">Contact Information</label>
+                <input type="text" class="form-control" id="contact_info" name="contact_info" 
+                       placeholder="Phone number or contact details">
+              </div>
+
+              <div class="col-12">
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Add Transport Service
+                  </button>
+                  <a href="{{ url_for('admin_transport') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                  </a>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

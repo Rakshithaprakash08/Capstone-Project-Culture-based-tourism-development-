@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ place.name }} - Cultural Tour{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <a href="{{ url_for('index') }}" class="btn btn-link px-0 mb-3">
+    <i class="bi bi-arrow-left"></i> Back to all tours
+  </a>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      {% if place.image_url %}
+        <div class="ratio ratio-16x9 mb-3">
+          <img src="{{ place.image_url }}" class="rounded-3 w-100" alt="{{ place.name }}">
+        </div>
+      {% endif %}
+
+      <h2 class="fw-bold mb-1">{{ place.name }}</h2>
+      <p class="text-muted mb-2">
+        {{ place.city if place.city }}{% if place.city %}, {% endif %}{{ place.state }}
+      </p>
+
+      <h5 class="mt-4">Overview</h5>
+      <p>{{ place.description }}</p>
+
+      <h5 class="mt-4">Cultural Highlights</h5>
+      <p>{{ place.culture_description }}</p>
+
+     {% if place.video_url %}
+  <h6 class="mt-4">Experience a glimpse</h6>
+  <div class="ratio ratio-16x9">
+    <iframe
+      src="{{ place.video_url | youtube_embed }}"
+      title="Cultural video"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen>
+    </iframe>
+  </div>
+{% endif %}
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card sticky-side shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Tour Details</h5>
+          <ul class="list-unstyled small mb-3">
+            <li><i class="bi bi-calendar-week"></i> Duration: {{ place.duration_days }} days</li>
+            <li><i class="bi bi-currency-rupee"></i> From ₹{{ '%.0f'|format(place.price_per_person) }} per person</li>
+          </ul>
+          <a href="{{ url_for('book_place', place_id=place.id) }}" class="btn btn-primary w-100 mb-2">
+            <i class="bi bi-ticket-perforated"></i> Book this Cultural Tour
+          </a>
+          <p class="small text-muted mb-0">
+            We will confirm your booking via email &amp; call with detailed itinerary.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

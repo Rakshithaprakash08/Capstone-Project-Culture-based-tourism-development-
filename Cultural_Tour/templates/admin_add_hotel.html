@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Add Hotel{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="mb-0">Add New Hotel</h4>
+        </div>
+        <div class="card-body">
+          <form method="POST" action="{{ url_for('admin_add_hotel') }}">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="place_id" class="form-label">Select Place *</label>
+                <select class="form-select" id="place_id" name="place_id" required>
+                  <option value="">Choose a place...</option>
+                  {% for place in places %}
+                    <option value="{{ place.id }}">{{ place.name }}, {{ place.state }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="name" class="form-label">Hotel Name *</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+              </div>
+
+              <div class="col-12">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" 
+                         placeholder="Brief description of the hotel..."></textarea>
+              </div>
+
+              <div class="col-md-6">
+                <label for="price_per_night" class="form-label">Price per Night (₹) *</label>
+                <input type="number" class="form-control" id="price_per_night" name="price_per_night" 
+                       min="0" step="0.01" value="0" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="rating" class="form-label">Rating (1-5)</label>
+                <input type="number" class="form-control" id="rating" name="rating" 
+                       min="1" max="5" step="0.1" placeholder="4.5">
+              </div>
+
+              <div class="col-12">
+                <label for="amenities" class="form-label">Amenities</label>
+                <input type="text" class="form-control" id="amenities" name="amenities" 
+                       placeholder="WiFi, Pool, Restaurant, AC...">
+                <div class="form-text">Separate amenities with commas</div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="image_url" class="form-label">Image URL</label>
+                <input type="url" class="form-control" id="image_url" name="image_url" 
+                       placeholder="https://example.com/image.jpg">
+              </div>
+
+              <div class="col-md-6">
+                <label for="contact_info" class="form-label">Contact Information</label>
+                <input type="text" class="form-control" id="contact_info" name="contact_info" 
+                       placeholder="Phone, email, or address">
+              </div>
+
+              <div class="col-12">
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Add Hotel
+                  </button>
+                  <a href="{{ url_for('admin_hotels') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                  </a>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

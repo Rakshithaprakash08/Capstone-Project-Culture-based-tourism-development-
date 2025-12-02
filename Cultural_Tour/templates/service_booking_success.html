@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Booking Success{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-success">
+        <div class="card-header bg-success text-white text-center">
+          <i class="bi bi-check-circle display-4"></i>
+          <h3 class="mt-3 mb-0">Service Booking Confirmed!</h3>
+        </div>
+        <div class="card-body">
+          <div class="text-center mb-4">
+            <p class="lead">Thank you for your service booking. Here are your booking details:</p>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0">Booking Information</h6>
+                </div>
+                <div class="card-body">
+                  <p><strong>Booking ID:</strong> #{{ booking.id }}</p>
+                  <p><strong>Place:</strong> {{ booking.place.name }}</p>
+                  <p><strong>Status:</strong> 
+                    <span class="badge {% if booking.status == 'Confirmed' %}bg-success
+                                      {% elif booking.status == 'Cancelled' %}bg-danger
+                                      {% else %}bg-warning{% endif %}">
+                      {{ booking.status }}
+                    </span>
+                  </p>
+                  <p><strong>Booking Date:</strong> {{ booking.created_at.strftime('%d %b %Y') }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0">Customer Details</h6>
+                </div>
+                <div class="card-body">
+                  <p><strong>Name:</strong> {{ booking.customer_name }}</p>
+                  <p><strong>Email:</strong> {{ booking.customer_email }}</p>
+                  <p><strong>Phone:</strong> {{ booking.customer_phone }}</p>
+                  <p><strong>People:</strong> {{ booking.num_people }}</p>
+                </div>
+              </div>
+            </div>
+
+            {% if booking.hotel %}
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0">Hotel Details</h6>
+                </div>
+                <div class="card-body">
+                  <p><strong>Hotel:</strong> {{ booking.hotel.name }}</p>
+                  {% if booking.check_in_date %}
+                  <p><strong>Check-in:</strong> {{ booking.check_in_date.strftime('%d %b %Y') }}</p>
+                  <p><strong>Check-out:</strong> {{ booking.check_out_date.strftime('%d %b %Y') }}</p>
+                  <p><strong>Nights:</strong> {{ booking.num_days }}</p>
+                  <p><strong>Rooms:</strong> {{ booking.num_rooms }}</p>
+                  {% endif %}
+                  <p><strong>Hotel Total:</strong> ₹{{ '%.0f'|format(booking.hotel_total) }}</p>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if booking.transport %}
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0">Transport Details</h6>
+                </div>
+                <div class="card-body">
+                  <p><strong>Service:</strong> {{ booking.transport.name }}</p>
+                  <p><strong>Type:</strong> 
+                    <span class="badge 
+                      {% if booking.transport.transport_type == 'bus' %}bg-info
+                      {% elif booking.transport.transport_type == 'cab' %}bg-warning
+                      {% elif booking.transport.transport_type == 'train' %}bg-success
+                      {% else %}bg-secondary{% endif %}">
+                      {{ booking.transport.transport_type|upper }}
+                    </span>
+                  </p>
+                  <p><strong>Transport Total:</strong> ₹{{ '%.0f'|format(booking.transport_total) }}</p>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="col-12">
+              <div class="card bg-light">
+                <div class="card-body text-center">
+                  <h5 class="text-success">Total Amount: ₹{{ '%.0f'|format(booking.total_amount) }}</h5>
+                  {% if booking.special_requests %}
+                  <div class="mt-3">
+                    <strong>Special Requests:</strong>
+                    <p class="text-muted">{{ booking.special_requests }}</p>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <p class="text-muted">
+              We will contact you shortly to confirm your booking and discuss payment details.
+            </p>
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+              <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="bi bi-house"></i> Back to Home
+              </a>
+              <a href="{{ url_for('place_detail', place_id=booking.place.id) }}" class="btn btn-outline-primary">
+                <i class="bi bi-compass"></i> View Place Details
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Edit Transport Service{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>Edit Transport Service</h3>
+    <a href="{{ url_for('admin_transport') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Back to Transport
+    </a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="card">
+    <div class="card-body">
+      <form method="POST">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="place_id" class="form-label">Place *</label>
+              <select class="form-select" id="place_id" name="place_id" required>
+                <option value="">Select a place</option>
+                {% for place in places %}
+                  <option value="{{ place.id }}" {% if transport.place_id == place.id %}selected{% endif %}>
+                    {{ place.name }}, {{ place.state }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="transport_type" class="form-label">Transport Type *</label>
+              <select class="form-select" id="transport_type" name="transport_type" required>
+                <option value="">Select type</option>
+                <option value="bus" {% if transport.transport_type == 'bus' %}selected{% endif %}>Bus</option>
+                <option value="cab" {% if transport.transport_type == 'cab' %}selected{% endif %}>Cab</option>
+                <option value="train" {% if transport.transport_type == 'train' %}selected{% endif %}>Train</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="name" class="form-label">Service Name *</label>
+              <input type="text" class="form-control" id="name" name="name" 
+                     value="{{ transport.name }}" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="price" class="form-label">Price (₹) *</label>
+              <input type="number" class="form-control" id="price" name="price" 
+                     value="{{ '%.0f'|format(transport.price) }}" min="0" step="0.01" required>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="capacity" class="form-label">Capacity (people)</label>
+              <input type="number" class="form-control" id="capacity" name="capacity" 
+                     value="{{ transport.capacity if transport.capacity }}" min="1" 
+                     placeholder="e.g., 50">
+            </div>
+
+            <div class="mb-3">
+              <label for="duration_hours" class="form-label">Duration (hours)</label>
+              <input type="number" class="form-control" id="duration_hours" name="duration_hours" 
+                     value="{{ transport.duration_hours if transport.duration_hours }}" min="0" step="0.1" 
+                     placeholder="e.g., 2.5">
+            </div>
+
+            <div class="mb-3">
+              <label for="operating_hours" class="form-label">Operating Hours</label>
+              <input type="text" class="form-control" id="operating_hours" name="operating_hours" 
+                     value="{{ transport.operating_hours or '' }}" 
+                     placeholder="e.g., 6:00 AM - 10:00 PM">
+            </div>
+
+            <div class="mb-3">
+              <label for="contact_info" class="form-label">Contact Information</label>
+              <input type="text" class="form-control" id="contact_info" name="contact_info" 
+                     value="{{ transport.contact_info or '' }}" placeholder="Phone, email, etc.">
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea class="form-control" id="description" name="description" rows="4" 
+                    placeholder="Service description...">{{ transport.description or '' }}</textarea>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle"></i> Update Transport Service
+          </button>
+          <a href="{{ url_for('admin_transport') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

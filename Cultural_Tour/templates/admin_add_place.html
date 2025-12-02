@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Add Place{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h3 class="mb-3">Add New Cultural Place</h3>
+  <form method="post" class="card card-body shadow-sm">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Place Name*</label>
+        <input type="text" name="name" class="form-control" required>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">State*</label>
+        <select name="state" class="form-select" required>
+          <option value="">Select</option>
+          {% for st in states %}
+            <option value="{{ st }}">{{ st }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">City</label>
+        <input type="text" name="city" class="form-control">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Short Intro* (for cards)</label>
+      <input type="text" name="short_intro" class="form-control" maxlength="200" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Detailed Description*</label>
+      <textarea name="description" class="form-control" rows="3" required></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Cultural Description* (history, arts, cuisine, festivals)</label>
+      <textarea name="culture_description" class="form-control" rows="3" required></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Image URL</label>
+        <input type="url" name="image_url" class="form-control">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Video URL (YouTube embed or similar)</label>
+        <input type="url" name="video_url" class="form-control">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Price per Person (₹)</label>
+        <input type="number" name="price_per_person" class="form-control" min="0" step="100">
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Duration (days)</label>
+        <input type="number" name="duration_days" class="form-control" min="1" value="2">
+      </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">
+      <i class="bi bi-save"></i> Save Place
+    </button>
+  </form>
+</div>
+{% endblock %}
